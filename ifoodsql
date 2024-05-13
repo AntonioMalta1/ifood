@@ -1,3 +1,140 @@
-Aqui vai ficar as tabelas do sql
-
-create table usuario ()
+create table base(
+id int primary key not null auto_increment,
+data_created datetime,
+status int
+);
+create table User(
+id_User int primary key not null auto_increment,
+name varchar(60),
+email varchar(60),
+password varchar(60),
+telephone varchar(13),
+CPF varchar(11)
+);
+create table restaurant(
+id_restaurant int primary key not null auto_increment,
+Foreign key(id_category_restaurant) references category_restaurant(id_category_restaurant), 
+name varchar(60),
+descript varchar(300),
+telephone varchar(13),
+rate varchar(300),
+CNPJ varchar(14)
+);
+create table category_restaurant(
+id_category_restaurant int primary key not null auto_increment,
+name varchar(60),
+description varchar(300)
+);
+create table category_product(
+id_category_product int primary key not null auto_increment,
+name varchar(60),
+description varchar(300)
+);
+create table product(
+id_product int primary key not null auto_increment,
+name varchar(60),
+Foreign key(id_category_product) references category_product(id_category_product),
+price Float,
+description varchar(300),
+Foreign key(id_restaurant) references restaurant(id_restaurant)
+);
+create table additional(
+id_additional int primary key not null auto_increment,
+name varchar(60),
+price Float,
+description varchar(300)
+);
+create table product_additional(
+id_product_additional int primary key not null auto_increment,
+Foreign key(id_product) references product(id_product),
+Foreign key(id_additional) references additional(id_additional)
+);
+create table status(
+id_status int primary key not null auto_increment,
+name varchar(60),
+description varchar(300)
+);
+create table address(
+id_address int primary key not null auto_increment,
+street varchar(60),
+neighborhood varchar(60),
+city varchar(60),
+CEP varchar(8),
+number varchar(5),
+complement varchar(300),
+Foreign key(id_User) references User(id_User),
+standard float,
+Foreign key(id_restaurant) references restaurant(id_restaurant)
+);
+create table coupon(
+id_coupon int primary key not null auto_increment,
+code varchar(10),
+price Float,
+description varchar(300),
+validity date
+);
+create table pedido(
+id_pedido int primary key not null auto_increment,
+Foreign key(id_address) references address(id_address),
+Foreign key(id_User) references User(id_User),
+Foreign key(id_restaurant) references restaurant(id_restaurant),
+delivery_fee Float,
+amount Float,
+description varchar(300),
+Foreign key(id_coupon) references coupon(id_coupon),
+Foreign key(id_status) references status(id_status)
+);
+create table Pedido_product(
+id_Pedido_product int primary key not null auto_increment,
+Foreign key(id) references base(id),
+Foreign key(id_pedido) references pedido(id_pedido),
+Foreign key(id_product) references product(id_product)
+);
+create table additional_product_pedido(
+id_additional_product_pedido int primary key not null auto_increment,
+Foreign key(id_Pedido_product) references Pedido_product(id_Pedido_product),
+Foreign key(id_additional) references additional(id_additional),
+amount Float
+);
+create table payment_method(
+id_payment_method int primary key not null auto_increment,
+name varchar(60),
+descript varchar(300)
+);
+create table payment_status(
+id_payment_status int primary key not null auto_increment,
+name varchar(60),
+descript varchar(300)
+);
+create table payment(
+id_payment int primary key not null auto_increment,
+Foreign key(id_pedido) references pedido(id_pedido),
+Foreign key(id_payment_method) references payment_method(id_payment_method),
+price Float,
+data_time datetime,
+Foreign key(id_payment_status) references payment_status(id_payment_status)
+);
+create table historic(
+id_historic int primary key not null auto_increment,
+Foreign key(id) references base(id),
+Foreign key(id_pedido) references pedido(id_pedido),
+Foreign key(id_status) references status(id_status)
+);
+create table favorites(
+id_favorites int primary key not null auto_increment,
+Foreign key(id_User) references User(id_User),
+Foreign key(id_restaurant) references restaurant(id_restaurant)
+);
+create table assessment(
+id_assessment int primary key not null auto_increment,
+Foreign key(id_pedido) references pedido(id_pedido),
+restaurant_rating float,
+order_classification float,
+description varchar(300)
+);
+create table operation(
+id_operation int primary key not null auto_increment,
+dia date,
+time_open datetime,
+time_closing datetime
+); 
