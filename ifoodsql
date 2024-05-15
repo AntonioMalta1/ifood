@@ -1,140 +1,380 @@
-create table base(
-id int primary key not null auto_increment,
-data_created datetime,
-status int
+CREATE TABLE User (
+    id_User INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    name VARCHAR(60),
+    email VARCHAR(60),
+    password VARCHAR(60),
+    telephone VARCHAR(13),
+    CPF VARCHAR(11)
 );
-create table User(
-id_User int primary key not null auto_increment,
-name varchar(60),
-email varchar(60),
-password varchar(60),
-telephone varchar(13),
-CPF varchar(11)
+
+CREATE TABLE restaurant (
+    id_restaurant INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    id_category_restaurant INT,
+    name VARCHAR(60),
+    descript VARCHAR(300),
+    telephone VARCHAR(13),
+    rate VARCHAR(300),
+    CNPJ VARCHAR(14),
+    FOREIGN KEY (id_category_restaurant) REFERENCES category_restaurant(id_category_restaurant)
 );
-create table restaurant(
-id_restaurant int primary key not null auto_increment,
-Foreign key(id_category_restaurant) references category_restaurant(id_category_restaurant), 
-name varchar(60),
-descript varchar(300),
-telephone varchar(13),
-rate varchar(300),
-CNPJ varchar(14)
+
+CREATE TABLE category_restaurant (
+    id_category_restaurant INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    name VARCHAR(60),
+    description VARCHAR(300)
 );
-create table category_restaurant(
-id_category_restaurant int primary key not null auto_increment,
-name varchar(60),
-description varchar(300)
+
+CREATE TABLE category_product (
+    id_category_product INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name VARCHAR(60),
+    description VARCHAR(300)
 );
-create table category_product(
-id_category_product int primary key not null auto_increment,
-name varchar(60),
-description varchar(300)
+
+CREATE TABLE product (
+    id_product INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    name VARCHAR(60),
+    id_category_product INT,
+    price FLOAT,
+    description VARCHAR(300),
+    id_restaurant INT,
+    FOREIGN KEY (id_category_product) REFERENCES category_product(id_category_product),
+    FOREIGN KEY (id_restaurant) REFERENCES restaurant(id_restaurant)
 );
-create table product(
-id_product int primary key not null auto_increment,
-name varchar(60),
-Foreign key(id_category_product) references category_product(id_category_product),
-price Float,
-description varchar(300),
-Foreign key(id_restaurant) references restaurant(id_restaurant)
+
+CREATE TABLE additional (
+    id_additional INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    name VARCHAR(60),
+    price FLOAT,
+    description VARCHAR(300)
 );
-create table additional(
-id_additional int primary key not null auto_increment,
-name varchar(60),
-price Float,
-description varchar(300)
+
+CREATE TABLE product_additional (
+    id_product_additional INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id_product INT,
+    id_additional INT,
+    FOREIGN KEY (id_product) REFERENCES product(id_product),
+    FOREIGN KEY (id_additional) REFERENCES additional(id_additional)
 );
-create table product_additional(
-id_product_additional int primary key not null auto_increment,
-Foreign key(id_product) references product(id_product),
-Foreign key(id_additional) references additional(id_additional)
+
+CREATE TABLE status (
+    id_status INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    name VARCHAR(60),
+    description VARCHAR(300)
 );
-create table status(
-id_status int primary key not null auto_increment,
-name varchar(60),
-description varchar(300)
+
+CREATE TABLE address (
+    id_address INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    street VARCHAR(60),
+    neighborhood VARCHAR(60),
+    city VARCHAR(60),
+    CEP VARCHAR(8),
+    number VARCHAR(5),
+    complement VARCHAR(300),
+    id_User INT,
+    id_restaurant INT,
+    standard FLOAT,
+    FOREIGN KEY (id_User) REFERENCES User(id_User),
+    FOREIGN KEY (id_restaurant) REFERENCES restaurant(id_restaurant)
 );
-create table address(
-id_address int primary key not null auto_increment,
-street varchar(60),
-neighborhood varchar(60),
-city varchar(60),
-CEP varchar(8),
-number varchar(5),
-complement varchar(300),
-Foreign key(id_User) references User(id_User),
-standard float,
-Foreign key(id_restaurant) references restaurant(id_restaurant)
+
+CREATE TABLE coupon (
+    id_coupon INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    code VARCHAR(10),
+    price FLOAT,
+    description VARCHAR(300),
+    validity DATE
 );
-create table coupon(
-id_coupon int primary key not null auto_increment,
-code varchar(10),
-price Float,
-description varchar(300),
-validity date
+
+CREATE TABLE pedido (
+    id_pedido INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    id_address INT,
+    id_User INT,
+    id_restaurant INT,
+    delivery_fee FLOAT,
+    amount FLOAT,
+    description VARCHAR(300),
+    id_coupon INT,
+    id_status INT,
+    FOREIGN KEY (id_address) REFERENCES address(id_address),
+    FOREIGN KEY (id_User) REFERENCES User(id_User),
+    FOREIGN KEY (id_restaurant) REFERENCES restaurant(id_restaurant),
+    FOREIGN KEY (id_coupon) REFERENCES coupon(id_coupon),
+    FOREIGN KEY (id_status) REFERENCES status(id_status)
 );
-create table pedido(
-id_pedido int primary key not null auto_increment,
-Foreign key(id_address) references address(id_address),
-Foreign key(id_User) references User(id_User),
-Foreign key(id_restaurant) references restaurant(id_restaurant),
-delivery_fee Float,
-amount Float,
-description varchar(300),
-Foreign key(id_coupon) references coupon(id_coupon),
-Foreign key(id_status) references status(id_status)
+
+CREATE TABLE Pedido_product (
+    id_Pedido_product INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id_pedido INT,
+    id_product INT,
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+    FOREIGN KEY (id_product) REFERENCES product(id_product)
 );
-create table Pedido_product(
-id_Pedido_product int primary key not null auto_increment,
-Foreign key(id) references base(id),
-Foreign key(id_pedido) references pedido(id_pedido),
-Foreign key(id_product) references product(id_product)
+
+CREATE TABLE additional_product_pedido (
+    id_additional_product_pedido INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id_Pedido_product INT,
+    id_additional INT,
+    amount FLOAT,
+    FOREIGN KEY (id_Pedido_product) REFERENCES Pedido_product(id_Pedido_product),
+    FOREIGN KEY (id_additional) REFERENCES additional(id_additional)
 );
-create table additional_product_pedido(
-id_additional_product_pedido int primary key not null auto_increment,
-Foreign key(id_Pedido_product) references Pedido_product(id_Pedido_product),
-Foreign key(id_additional) references additional(id_additional),
-amount Float
+
+CREATE TABLE payment_method (
+    id_payment_method INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    name VARCHAR(60),
+    descript VARCHAR(300)
 );
-create table payment_method(
-id_payment_method int primary key not null auto_increment,
-name varchar(60),
-descript varchar(300)
+
+CREATE TABLE payment_status (
+    id_payment_status INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    name VARCHAR(60),
+    descript VARCHAR(300)
 );
-create table payment_status(
-id_payment_status int primary key not null auto_increment,
-name varchar(60),
-descript varchar(300)
+
+CREATE TABLE payment (
+    id_payment INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    id_pedido INT,
+    id_payment_method INT,
+    price FLOAT,
+    data_time DATETIME,
+    id_payment_status INT,
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+    FOREIGN KEY (id_payment_method) REFERENCES payment_method(id_payment_method),
+    FOREIGN KEY (id_payment_status) REFERENCES payment_status(id_payment_status)
 );
-create table payment(
-id_payment int primary key not null auto_increment,
-Foreign key(id_pedido) references pedido(id_pedido),
-Foreign key(id_payment_method) references payment_method(id_payment_method),
-price Float,
-data_time datetime,
-Foreign key(id_payment_status) references payment_status(id_payment_status)
+
+CREATE TABLE historic (
+    id_historic INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    id_pedido INT,
+    id_status INT,
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+    FOREIGN KEY (id_status) REFERENCES status(id_status)
 );
-create table historic(
-id_historic int primary key not null auto_increment,
-Foreign key(id) references base(id),
-Foreign key(id_pedido) references pedido(id_pedido),
-Foreign key(id_status) references status(id_status)
+
+CREATE TABLE favorites (
+    id_favorites INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    id_User INT,
+    id_restaurant INT,
+    FOREIGN KEY (id_User) REFERENCES User(id_User),
+    FOREIGN KEY (id_restaurant) REFERENCES restaurant(id_restaurant)
 );
-create table favorites(
-id_favorites int primary key not null auto_increment,
-Foreign key(id_User) references User(id_User),
-Foreign key(id_restaurant) references restaurant(id_restaurant)
+
+CREATE TABLE assessment (
+    id_assessment INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    id_pedido INT,
+    restaurant_rating FLOAT,
+    order_classification FLOAT,
+    description VARCHAR(300),
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido)
 );
-create table assessment(
-id_assessment int primary key not null auto_increment,
-Foreign key(id_pedido) references pedido(id_pedido),
-restaurant_rating float,
-order_classification float,
-description varchar(300)
+
+CREATE TABLE operation (
+    id_operation INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    data_created DATETIME,
+    status INT,
+    dia DATE,
+    time_open DATETIME,
+    time_closing DATETIME
 );
-create table operation(
-id_operation int primary key not null auto_increment,
-dia date,
-time_open datetime,
-time_closing datetime
-); 
+
+INSERT INTO User (data_created, status, name, email, password, telephone, CPF)
+VALUES
+    ('2024-01-01', 1, 'Cliente 1', 'cliente1@example.com', 'senha123', '999999999', '12345678901'),
+    ('2024-01-02', 1, 'Cliente 2', 'cliente2@example.com', 'senha123', '999999998', '23456789012'),
+    ('2024-01-03', 1, 'Cliente 3', 'cliente3@example.com', 'senha123', '999999997', '34567890123'),
+    ('2024-01-04', 1, 'Cliente 4', 'cliente4@example.com', 'senha123', '999999996', '45678901234'),
+    ('2024-01-05', 1, 'Cliente 5', 'cliente5@example.com', 'senha123', '999999995', '56789012345'),
+    ('2024-01-06', 1, 'Cliente 6', 'cliente6@example.com', 'senha123', '999999994', '67890123456'),
+    ('2024-01-07', 1, 'Cliente 7', 'cliente7@example.com', 'senha123', '999999993', '78901234567'),
+    ('2024-01-08', 1, 'Cliente 8', 'cliente8@example.com', 'senha123', '999999992', '89012345678'),
+    ('2024-01-09', 1, 'Cliente 9', 'cliente9@example.com', 'senha123', '999999991', '90123456789'),
+    ('2024-01-10', 1, 'Cliente 10', 'cliente10@example.com', 'senha123', '999999990', '01234567890');
+
+
+INSERT INTO restaurant (data_created, status, id_category_restaurant, name, description, telephone, rate, CNPJ)
+VALUES
+    ('2024-01-01', 1, 1, 'Restaurante 1', 'Descrição do restaurante 1', '111111111', '4.5', '12345678901234'),
+    ('2024-01-02', 1, 2, 'Restaurante 2', 'Descrição do restaurante 2', '222222222', '4.2', '23456789012345'),
+    ('2024-01-03', 1, 3, 'Restaurante 3', 'Descrição do restaurante 3', '333333333', '4.7', '34567890123456'),
+    ('2024-01-04', 1, 1, 'Restaurante 4', 'Descrição do restaurante 4', '444444444', '4.0', '45678901234567');
+
+-- Inserindo 3 categorias de restaurantes
+INSERT INTO category_restaurant (data_created, status, name, description)
+VALUES
+    ('2024-01-01', 1, 'Categoria 1', 'Descrição da categoria 1'),
+    ('2024-01-02', 1, 'Categoria 2', 'Descrição da categoria 2'),
+    ('2024-01-03', 1, 'Categoria 3', 'Descrição da categoria 3');
+
+
+INSERT INTO category_product (data_created, status, name, description)
+VALUES
+    ('2024-01-01', 1, 'Categoria Produto 1', 'Descrição da categoria 1'),
+    ('2024-01-02', 1, 'Categoria Produto 2', 'Descrição da categoria 2'),
+    ('2024-01-03', 1, 'Categoria Produto 3', 'Descrição da categoria 3'),
+    ('2024-01-04', 1, 'Categoria Produto 4', 'Descrição da categoria 4'),
+    ('2024-01-05', 1, 'Categoria Produto 5', 'Descrição da categoria 5'),
+    ('2024-01-06', 1, 'Categoria Produto 6', 'Descrição da categoria 6'),
+    ('2024-01-07', 1, 'Categoria Produto 7', 'Descrição da categoria 7'),
+    ('2024-01-08', 1, 'Categoria Produto 8', 'Descrição da categoria 8'),
+    ('2024-01-09', 1, 'Categoria Produto 9', 'Descrição da categoria 9'),
+    ('2024-01-10', 1, 'Categoria Produto 10', 'Descrição da categoria 10'),
+    ('2024-01-11', 1, 'Categoria Produto 11', 'Descrição da categoria 11'),
+    ('2024-01-12', 1, 'Categoria Produto 12', 'Descrição da categoria 12'),
+    ('2024-01-13', 1, 'Categoria Produto 13', 'Descrição da categoria 13'),
+    ('2024-01-14', 1, 'Categoria Produto 14', 'Descrição da categoria 14'),
+    ('2024-01-15', 1, 'Categoria Produto 15', 'Descrição da categoria 15');
+
+
+INSERT INTO product (data_created, status, id_category_product, name, price, description, id_restaurant)
+VALUES
+    ('2024-01-01', 1, 1, 'Produto 1', 10.50, 'Descrição do produto 1', 1),
+    ('2024-01-02', 1, 2, 'Produto 2', 15.75, 'Descrição do produto 2', 1),
+    ('2024-01-03', 1, 3, 'Produto 3', 8.99, 'Descrição do produto 3', 1),
+    ('2024-01-04', 1, 4, 'Produto 4', 12.25, 'Descrição do produto 4', 2),
+    ('2024-01-05', 1, 5, 'Produto 5', 9.50, 'Descrição do produto 5', 2),
+    ('2024-01-06', 1, 6, 'Produto 6', 11.99, 'Descrição do produto 6', 2),
+    ('2024-01-07', 1, 7, 'Produto 7', 14.50, 'Descrição do produto 7', 3),
+    ('2024-01-08', 1, 8, 'Produto 8', 7.25, 'Descrição do produto 8', 3),
+    ('2024-01-09', 1, 9, 'Produto 9', 16.99, 'Descrição do produto 9', 3),
+    ('2024-01-10', 1, 10, 'Produto 10', 20.50, 'Descrição do produto 10', 3),
+    ('2024-01-11', 1, 11, 'Produto 11', 11.75, 'Descrição do produto 11', 4),
+    ('2024-01-12', 1, 12, 'Produto 12', 18.99, 'Descrição do produto 12', 4),
+    ('2024-01-13', 1, 13, 'Produto 13', 22.25, 'Descrição do produto 13', 4),
+    ('2024-01-14', 1, 14, 'Produto 14', 13.50, 'Descrição do produto 14', 4),
+    ('2024-01-15', 1, 15, 'Produto 15', 17.25, 'Descrição do produto 15', 4),
+    ('2024-01-16', 1, 1, 'Produto 16', 10.50, 'Descrição do produto 16', 1),
+    ('2024-01-17', 1, 2, 'Produto 17', 15.75, 'Descrição do produto 17', 1),
+    ('2024-01-18', 1, 3, 'Produto 18', 8.99, 'Descrição do produto 18', 1),
+    ('2024-01-19', 1, 4, 'Produto 19', 12.25, 'Descrição do produto 19', 2),
+    ('2024-01-20', 1, 5, 'Produto 20', 9.50, 'Descrição do produto 20', 2),
+    ('2024-01-21', 1, 6, 'Produto 21', 11.99, 'Descrição do produto 21', 2),
+    ('2024-01-22', 1, 7, 'Produto 22', 14.50, 'Descrição do produto 22', 3),
+    ('2024-01-23', 1, 8, 'Produto 23', 7.25, 'Descrição do produto 23', 3),
+    ('2024-01-24', 1, 9, 'Produto 24', 16.99, 'Descrição do produto 24', 3),
+    ('2024-01-25', 1, 10, 'Produto 25', 20.50, 'Descrição do produto 25', 3),
+    ('2024-01-26', 1, 11, 'Produto 26', 11.75, 'Descrição do produto 26', 4),
+    ('2024-01-27', 1, 12, 'Produto 27', 18.99, 'Descrição do produto 27', 4),
+    ('2024-01-28', 1, 13, 'Produto 28', 22.25, 'Descrição do produto 28', 4),
+    ('2024-01-29', 1, 14, 'Produto 29', 13.50, 'Descrição do produto 29', 4),
+    ('2024-01-30', 1, 15, 'Produto 30', 17.25, 'Descrição do produto 30', 4);
+
+
+INSERT INTO additional (data_created, status, name, price, description)
+VALUES
+    ('2024-01-01', 1, 'Adicional 1', 2.50, 'Descrição do adicional 1'),
+    ('2024-01-02', 1, 'Adicional 2', 3.75, 'Descrição do adicional 2'),
+    ('2024-01-03', 1, 'Adicional 3', 2.99, 'Descrição do adicional 3'),
+    ('2024-01-04', 1, 'Adicional 4', 4.25, 'Descrição do adicional 4'),
+    ('2024-01-05', 1, 'Adicional 5', 1.50, 'Descrição do adicional 5'),
+    ('2024-01-06', 1, 'Adicional 6', 2.99, 'Descrição do adicional 6'),
+    ('2024-01-07', 1, 'Adicional 7', 3.50, 'Descrição do adicional 7'),
+    ('2024-01-08', 1, 'Adicional 8', 2.25, 'Descrição do adicional 8'),
+    ('2024-01-09', 1, 'Adicional 9', 3.99, 'Descrição do adicional 9'),
+    ('2024-01-10', 1, 'Adicional 10', 2.50, 'Descrição do adicional 10');
+
+
+INSERT INTO status (data_created, status, name, description)
+VALUES
+    ('2024-01-01', 1, 'Ativo', 'Status Ativo'),
+    ('2024-01-02', 1, 'Inativo', 'Status Inativo'),
+    ('2024-01-03', 1, 'Pendente', 'Status Pendente');
+
+
+INSERT INTO address (data_created, status, street, neighborhood, city, CEP, number, complement, id_User, standard)
+VALUES
+    ('2024-01-01', 1, 'Rua A', 'Bairro A', 'Cidade A', '12345678', '100', 'Apto 101', 1, 1),
+    ('2024-01-02', 1, 'Rua B', 'Bairro B', 'Cidade B', '23456789', '200', 'Apto 202', 2, 1),
+    ('2024-01-03', 1, 'Rua C', 'Bairro C', 'Cidade C', '34567890', '300', 'Apto 303', 3, 1),
+    ('2024-01-04', 1, 'Rua D', 'Bairro D', 'Cidade D', '45678901', '400', 'Apto 404', 4, 1),
+    ('2024-01-05', 1, 'Rua E', 'Bairro E', 'Cidade E', '56789012', '500', 'Apto 505', 5, 1),
+    ('2024-01-06', 1, 'Rua F', 'Bairro F', 'Cidade F', '67890123', '600', 'Apto 606', 6, 1),
+    ('2024-01-07', 1, 'Rua G', 'Bairro G', 'Cidade G', '78901234', '700', 'Apto 707', 7, 1),
+    ('2024-01-08', 1, 'Rua H', 'Bairro H', 'Cidade H', '89012345', '800', 'Apto 808', 8, 1),
+    ('2024-01-09', 1, 'Rua I', 'Bairro I', 'Cidade I', '90123456', '900', 'Apto 909', 9, 1),
+    ('2024-01-10', 1, 'Rua J', 'Bairro J', 'Cidade J', '01234567', '1000', 'Apto 1010', 10, 1);
+
+
+INSERT INTO coupon (data_created, status, code, price, description, validity)
+VALUES
+    ('2024-01-01', 1, 'CUPOM1', 5.00, 'Cupom de desconto 1', '2024-03-01'),
+    ('2024-01-02', 1, 'CUPOM2', 10.00, 'Cupom de desconto 2', '2024-04-01'),
+    ('2024-01-03', 1, 'CUPOM3', 15.00, 'Cupom de desconto 3', '2024-05-01');
+
+
+DECLARE @date DATE = '2024-03-01';
+DECLARE @i INT = 1;
+WHILE @i <= 45
+BEGIN
+    INSERT INTO pedido (data_created, status, id_address, id_User, id_restaurant, delivery_fee, amount, description, id_status)
+    VALUES
+        (@date, 1, @i % 10 + 1, @i % 10 + 1, @i % 4 + 1, 5.00, 30.00, 'Pedido ' + CAST(@i AS VARCHAR), 1);
+    
+    INSERT INTO historic (data_created, status, id_pedido, id_status)
+    VALUES
+        (@date, 1, @i, 1);
+
+    SET @i = @i + 1;
+    SET @date = DATEADD(DAY, 1, @date);
+END;
+
+
+DECLARE @pedido_id INT = 1;
+WHILE @pedido_id <= 45
+BEGIN
+    DECLARE @produto_id INT = 1;
+    WHILE @produto_id <= 30
+    BEGIN
+        DECLARE @adicional_id INT = (ABS(CHECKSUM(NEWID())) % 10) + 1;
+
+        INSERT INTO additional_product_pedido (id_Pedido_product, id_additional, amount)
+        VALUES
+            (@pedido_id, @adicional_id, ROUND(RAND() * 3, 2)); -- Quantidade aleatória de adicionais entre 0 e 3
+
+        SET @produto_id = @produto_id + 1;
+    END;
+
+    SET @pedido_id = @pedido_id + 1;
+END;
+
+-- Inserindo métodos de pagamentos
+INSERT INTO payment_method (data_created, status, name, description)
+VALUES
+    ('2024-01-01', 1, 'Cartão de Crédito', 'Pagamento com cartão de crédito'),
+    ('2024-01-02', 1, 'Cartão de Débito', 'Pagamento com cartão de débito'),
+    ('2024-01-03', 1, 'Dinheiro', 'Pagamento em dinheiro');
+
+-- Inserindo status de pagamento
+INSERT INTO payment_status (data_created, status, name, description)
+VALUES
+    ('2024-01-01', 1, 'Pendente', 'Status Pendente'),
+    ('2024-01-02', 1, 'Concluído', 'Status Concluído');
